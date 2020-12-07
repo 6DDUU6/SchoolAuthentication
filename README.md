@@ -13,7 +13,7 @@ Android端
 
 线程上写的有点乱，不过，能用就行qwq
 
-打包好的APP下载地址在此：https://github.com/6DDUU6/SchoolAuthentication/releases/tag/v1.0.0
+打包好的APP下载地址在此：https://dduu.lanzoui.com/iMcWbj4m53i
 # 项目说明
 此项目为开源协议 特别指出禁止任何个人或者公司将本代码投入商业使用，由此造成的后果和法律责任均与本人无关。
 
