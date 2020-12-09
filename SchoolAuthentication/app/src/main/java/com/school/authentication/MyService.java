@@ -340,7 +340,7 @@ public class MyService extends Service {
         String param = "username=" + username + "&clientip=" + client + "&nasip=" + nasip + "&mac=" + mac + "&timestamp=" + timestamp + "&authenticator="
                 + md5String;
         try {
-            String activeString = HttpUtil.doGet(url, param);
+            String activeString = HttpUtil.doGet(url+"?"+ param,"");
             Log.d(TAG, "keepConnection: "+activeString);
             JSONObject json = new JSONObject(activeString);
             activeString = json.getString("resinfo");

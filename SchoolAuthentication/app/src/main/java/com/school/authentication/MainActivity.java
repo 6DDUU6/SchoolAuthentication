@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.school.authentication.Tools;
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         fg=1;
-        loget.setText("");
+        //loget.setText("");
         username = user.getText().toString();
         password = pwd.getText().toString();
         client = clientip.getText().toString();
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         loget.append("登录线程启动...\n");
-        //loget.setSelection(loget.getText().length());
+        loget.setSelection(loget.getText().length());
         new Thread() {
             public void run() {
                 addlog("正在检测是否在学校局域网内...\n");
@@ -131,9 +132,52 @@ public class MainActivity extends AppCompatActivity {
                     conn.setInstanceFollowRedirects(false);
                     conn.setConnectTimeout(3000);
                     if(conn.getResponseCode()==200){
-                        addlog("当前网络已为畅通状态，无需再次登录\n");
-                        fg=0;
-                        return;
+                        //200不是畅通，是需要172.17.18.2:8080认证
+                        addlog("当前为纯学校wifi，需要登录认证，正在自动认证中...\n");
+                        cookie = HttpUtil.getck2();
+                        if(cookie.equals("")){
+                            addlog("没有获取到认证cookie！\n");
+                            return;
+                        }
+                        addlog("获取认证cookie成功，正在激活cookie...\n");
+                        String tmp;
+                        tmp = HttpUtil.doGet("http://172.17.18.2:8080/byod/index.xhtml",cookie);
+                        Pattern p = Pattern.compile("ViewState\" value=\"(.+?)\"");
+                        Matcher m = p.matcher(tmp);
+                        if (m.find()) {
+                            tmp = m.group(1);
+                        }else{
+                            addlog("没有获取到认证文本1！");
+                            return;
+                        }
+                        url = "http://172.17.18.2:8080/byod/"+HttpUtil.getRedirectUrl2("http://172.17.18.2:8080/byod/index.xhtml",
+                                "wlannasid=&usermac=&userurl=&userip=&ssid=&btn=&j_id_3_SUBMIT=1&javax.faces.ViewState="+ URLEncoder.encode(tmp, "UTF-8"),cookie);
+                        tmp = HttpUtil.doGet(url,cookie);
+                        p = Pattern.compile("ViewState\" value=\"(.+?)\"");
+                        m = p.matcher(tmp);
+                        if (m.find()) {
+                            tmp = m.group(1);
+                        }else{
+                            addlog("没有获取到认证文本2！");
+                            return;
+                        }
+                        tmp = HttpUtil.doPost3(url,"javax.faces.partial.ajax=true&javax.faces.source=mainForm%3Aj_id_r&javax.faces.partial.execute=mainForm&javax.faces.partial.render=mainForm%3Aerror+mainForm%3AforResetPwd&mainForm%3Aj_id_r=mainForm%3Aj_id_r&mainForm%3AforResetPwd=&userName=&userPwd=&userDynamicPwd=&userDynamicPwdd=&serviceType=&mainForm%3AuserNameLogin="+username+"&mainForm%3AserviceSuffixLogin=&mainForm%3ApasswordLogin="+Base64Utils.encode(password)+"%3D&mainForm%3AuserDynamicPwd=&mainForm%3AuserDynamicPwdd=&mainForm_SUBMIT=1&javax.faces.ViewState="+URLEncoder.encode(tmp, "UTF-8"),cookie);
+                        if(tmp.contains("show_result")){
+                            addlog("登录成功！wifi有可能会被断开，请连接wifi后再次登录！\n");
+                            //onclick(view);
+                            return;
+                        }
+                        else {
+                            p = Pattern.compile("detail:(.+?),");
+                            m = p.matcher(tmp);
+                            if (m.find()) {
+                                tmp = m.group(1);
+                            }else{
+                                tmp="没有获取到失败信息";
+                            }
+                            addlog("登录失败，返回的信息为："+tmp);
+                            return;
+                        }
                     }else if(conn.getResponseCode()==302){
                         url = conn.getHeaderField("Location");
                         if(url.equals("https://www.qq.com/")){
@@ -151,9 +195,9 @@ public class MainActivity extends AppCompatActivity {
                         addlog("需要认证，正在尝试认证中...\n");
                         url="http://172.17.18.3:8080/portal/pws?t=li&ifEmailAuth=false";
                         HttpUtil.doPost2(url,"userName=" + username + "&userPwd=" + Base64Utils.encode(password) + "%3D&userDynamicPwd=&userDynamicPwdd=&serviceType=&isSavePwd=on&userurl=&userip=&basip=&language=Chinese&usermac=null&wlannasid=&wlanssid=&entrance=null&loginVerifyCode=&userDynamicPwddd=&customPageId=100&pwdMode=0&portalProxyIP=172.17.18.3&portalProxyPort=50200&dcPwdNeedEncrypt=1&assignIpType=0&appRootUrl=http%3A%2F%2F172.17.18.3%3A8080%2Fportal%2F&manualUrl=&manualUrlEncryptKey=");
-                        addlog("发包完毕，重新获取中...\n");
+                        addlog("发包完毕，请重新按登录按钮\n");
                         fg=0;
-                        onclick(view);
+                        //onclick(view);
                         return;
                     }
                     //3种方式获取clientip
@@ -314,7 +358,7 @@ public class MainActivity extends AppCompatActivity {
         url = "http://enet.10000.gd.cn:8001/hbservice/client/active";
         String param = "username=" + username + "&clientip=" + client + "&nasip=" + nasip + "&mac=" + mac + "&timestamp=" + timestamp + "&authenticator="
                 + md5String;
-        String activeString = HttpUtil.doGet(url, param);
+        String activeString = HttpUtil.doGet(url+"?"+ param,"");
         JSONObject json = new JSONObject(activeString);
         activeString = json.getString("resinfo");
         //Log.d("MainActivity", "keepConnection: "+activeString);
