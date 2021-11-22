@@ -40,6 +40,7 @@ public class MyService extends Service {
     String nasip;
     String mac;
     String timestamp;
+    String version = "214";
     String secret = "Eshore!@#";
     String iswifi = "4060";
     String cookie;
@@ -275,11 +276,12 @@ public class MyService extends Service {
     }
 
     public String getVerifyCodeString() throws Exception {
-        url = "http://enet.10000.gd.cn:10001/client/challenge";
+        url = "http://enet.10000.gd.cn:10001/client/vchallenge";
         timestamp = System.currentTimeMillis() + "";
-        md5String = MD5Util.MD5(client + nasip + mac + timestamp + secret);
+        md5String = MD5Util.MD5(version + client + nasip + mac + timestamp + secret);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("version", version);
         jsonObject.put("username", username);
         jsonObject.put("clientip", client);
         jsonObject.put("nasip", nasip);
