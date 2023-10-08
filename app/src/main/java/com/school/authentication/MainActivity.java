@@ -135,6 +135,8 @@ public class MainActivity extends AppCompatActivity {
                         //200不是畅通，是需要认证
                         addlog("当前为纯学校wifi，需要登录认证，正在自动认证中...\n");
                         // TODO: 认证
+                        fg = 0;
+                        return;
                     } else if (conn.getResponseCode() == 302) {
                         url = conn.getHeaderField("Location");
                         if (url.equals("https://www.qq.com/")) {

@@ -38,6 +38,7 @@ public class Tools {
         }
         return file;
     }
+
     // 生成文件夹
     public static void makeRootDirectory(String filePath) {
         File file = null;
@@ -47,7 +48,7 @@ public class Tools {
                 file.mkdir();
             }
         } catch (Exception e) {
-            Log.i("error:", e+"");
+            Log.i("error:", e + "");
         }
     }
 
@@ -61,11 +62,14 @@ public class Tools {
         }
         return "";
     }
-    public static String intIP2String(int ip){
+
+    public static String intIP2String(int ip) {
         return (ip & 0xFF) + "." + ((ip >> 8) & 0xFF) + "." + ((ip >> 16) & 0xFF) + "." + ((ip >> 24) & 0xFF);
     }
+
     /**
      * 获取mac地址（适配所有Android版本）
+     *
      * @return
      */
     public static String getMac(Context context) {
@@ -99,15 +103,17 @@ public class Tools {
         }
         return "02:00:00:00:00:00";
     }
+
     /**
      * 根据wifi信息获取本地mac
+     *
      * @param context
      * @return
      */
-    public static String getLocalMacAddressFromWifiInfo(Context context){
+    public static String getLocalMacAddressFromWifiInfo(Context context) {
         WifiManager wifi = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         WifiInfo winfo = wifi.getConnectionInfo();
-        String mac =  winfo.getMacAddress();
+        String mac = winfo.getMacAddress();
         return mac;
     }
 
@@ -208,6 +214,7 @@ public class Tools {
         }
         return builder.toString();
     }
+
     /**
      * 根据IP地址获取MAC地址
      *
@@ -233,6 +240,7 @@ public class Tools {
         }
         return strMacAddr;
     }
+
     /**
      * 获取移动设备本地IP
      *

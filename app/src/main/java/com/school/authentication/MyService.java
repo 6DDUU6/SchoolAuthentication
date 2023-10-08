@@ -279,6 +279,7 @@ public class MyService extends Service {
         }
     }
 
+    //谢谢你，冗余侠
     public String getVerifyCodeString() throws Exception {
         url = "http://enet.10000.gd.cn:10001/client/vchallenge";
         timestamp = System.currentTimeMillis() + "";
