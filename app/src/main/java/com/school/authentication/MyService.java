@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
 import com.school.authentication.utils.Base64Utils;
 import com.school.authentication.utils.MyHttpUtil;
 import com.school.authentication.utils.MD5Util;
@@ -26,6 +27,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -195,8 +197,7 @@ public class MyService extends Service {
                 }
                 if (url.contains("172.17.18.2:30004")) {//是否需要认证
                     setnewtext("需要认证，正在尝试认证中...\n");
-                    url = "http://172.17.18.2:30004/byod/byodrs/login/defaultLogin";
-                    //TODO: 登录
+                    WebAuth();
                     setnewtext("发包认证完毕，20s后重新获取...\n");
                     relogin(notification);
                     return;
@@ -277,6 +278,30 @@ public class MyService extends Service {
             setnewtext("发生错误：" + e.getMessage() + "20s后再次尝试");
             relogin(notification);
         }
+    }
+
+    public void WebAuth() throws Exception {
+        url = "http://172.17.18.2:30004/byod/byodrs/login/defaultLogin";
+        HashMap<String, Object> map = new HashMap<String, Object>() {{
+            put("userName", username);
+            put("userPassword", Base64Utils.encode(password));
+            put("serviceSuffixId", "-1");
+            put("dynamicPwdAuth", false);
+            put("code", "");
+            put("codeTime", "");
+            put("validateCode", "");
+            put("licenseCode", "");
+            put("userGroupId", -1);
+            put("validationType", 2);
+            put("guestManagerId", -1);
+            put("shopIdE", null);
+            put("wlannasid", null);
+        }};
+        String data = JSON.toJSONString(map);
+        String ret = MyHttpUtil.doPost4(url, data);
+        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(ret);
+        String msg = (String) jsonObject.get("msg");
+        setnewtext("登录返回信息：" + msg);
     }
 
     //谢谢你，冗余侠

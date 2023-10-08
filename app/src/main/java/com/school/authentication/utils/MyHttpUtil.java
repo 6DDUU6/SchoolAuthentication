@@ -152,6 +152,40 @@ public class MyHttpUtil {
         return result;
     }
 
+    //💩都💩了，不如再💩一点
+    public static String doPost4(String url, String param) throws Exception {
+        HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+        conn.setConnectTimeout(3000);
+        conn.setReadTimeout(3000);
+        conn.setRequestMethod("POST");
+        conn.setDoOutput(false);
+        conn.setDoInput(true);
+
+        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.87 Safari/537.36");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Origin", "http://172.17.18.2:30004");
+        conn.setRequestProperty("Referer", "http://172.17.18.2:30004/byod/view/byod/template/templatePhone.html");
+        conn.setRequestProperty("Cookie", "testcookie=yes;");
+
+        PrintWriter out = new PrintWriter(conn.getOutputStream());
+
+        out.print(param);
+        out.flush();
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(
+                conn.getInputStream(), "utf-8"));
+
+        String line = "", result = "";
+
+        while ((line = in.readLine()) != null) {
+            result += line;
+        }
+
+        in.close();
+        out.close();
+        return result;
+    }
+
     public static String getRedirectUrl(String urlString) throws Exception {
         HttpURLConnection conn = (HttpURLConnection) new URL(urlString)
                 .openConnection();

@@ -8,28 +8,20 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import com.school.authentication.ConfigurationFile;
-
-import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
 import java.net.URL;
-import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.school.authentication.Tools;
-
 import org.json.JSONObject;
 
+import com.alibaba.fastjson.JSON;
 import com.school.authentication.utils.*;
 
 public class MainActivity extends AppCompatActivity {
@@ -82,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onclick(final View view) {
+    public void login(final View view) {
         if (fg == 1) { //通过fg判断是否已经有线程启动，避免有人连续按两次（
             return;
         }
@@ -134,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                     if (conn.getResponseCode() == 200) {
                         //200不是畅通，是需要认证
                         addlog("当前为纯学校wifi，需要登录认证，正在自动认证中...\n");
-                        // TODO: 认证
+                        WebAuth();
                         fg = 0;
                         return;
                     } else if (conn.getResponseCode() == 302) {
@@ -152,8 +144,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if (url.contains("172.17.18.2:30004")) {//是否需要认证
                         addlog("需要认证，正在尝试认证中...\n");
-                        url = "http://172.17.18.2:30004/byod/byodrs/login/defaultLogin";
-                        //TODO: 登录
+                        WebAuth();
                         addlog("发包完毕，请重新按登录按钮\n");
                         fg = 0;
                         return;
@@ -194,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                     String returncode = doLogin(verifycode);
                     addlog("登录返回的信息为：" + returncode + "\n");
                     if (returncode.contains("success")) {
-                        onclick3(view);
+                        startService(view);
                         addlog("登录成功！已启动前台服务并维持连接，请保持APP在后台运行\n");
                         fg = 0;
                     }
@@ -207,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
         }.start();
     }
 
-    public void onclick2(View view) {
+    public void logout(View view) {
         loget.append("正在注销中...\n");
         if (client == null || client.equals("")) {
             username = user.getText().toString();
@@ -241,6 +232,30 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }.start();
+    }
+
+    public void WebAuth() throws Exception {
+        url = "http://172.17.18.2:30004/byod/byodrs/login/defaultLogin";
+        HashMap<String, Object> map = new HashMap<String, Object>() {{
+            put("userName", username);
+            put("userPassword", Base64Utils.encode(password));
+            put("serviceSuffixId", "-1");
+            put("dynamicPwdAuth", false);
+            put("code", "");
+            put("codeTime", "");
+            put("validateCode", "");
+            put("licenseCode", "");
+            put("userGroupId", -1);
+            put("validationType", 2);
+            put("guestManagerId", -1);
+            put("shopIdE", null);
+            put("wlannasid", null);
+        }};
+        String data = JSON.toJSONString(map);
+        String ret = MyHttpUtil.doPost4(url, data);
+        com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(ret);
+        String msg = (String) jsonObject.get("msg");
+        addlog("登录返回信息：" + msg + "\n");
     }
 
     public String SimpleAuth(String timestamp) {
@@ -325,7 +340,7 @@ public class MainActivity extends AppCompatActivity {
         return activeString;
     }
 
-    public void onclick3(View view) {
+    public void startService(View view) {
 //        if(flag==1){
 //            Toast.makeText(MainActivity.this,"已经启动一个前台服务啦！",Toast.LENGTH_SHORT).show();
 //        }
@@ -348,7 +363,7 @@ public class MainActivity extends AppCompatActivity {
         flag = 1;
     }
 
-    public void onclick4(View view) {
+    public void stopService(View view) {
         Intent stop = new Intent(this, MyService.class);
         stopService(stop);
         flag = 0;
