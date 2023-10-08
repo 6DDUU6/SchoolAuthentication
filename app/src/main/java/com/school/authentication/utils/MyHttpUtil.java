@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class HttpUtil {
+public class MyHttpUtil {
 	// 我写的什么shit，真看不下去
 	public static String doGet(String url,String cookie) throws IOException {
 		String result = "";

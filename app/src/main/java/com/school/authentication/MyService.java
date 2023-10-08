@@ -17,7 +17,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.school.authentication.utils.Base64Utils;
-import com.school.authentication.utils.HttpUtil;
+import com.school.authentication.utils.MyHttpUtil;
 import com.school.authentication.utils.MD5Util;
 
 import org.json.JSONObject;
@@ -193,10 +193,10 @@ public class MyService extends Service {
                     relogin(notification);
                     return;
                 }
-                if (url.contains("172.17.18.3:8080")) {//是否需要认证
+                if (url.contains("172.17.18.2:30004")) {//是否需要认证
                     setnewtext("需要认证，正在尝试认证中...\n");
-                    url = "http://172.17.18.3:8080/portal/pws?t=li&ifEmailAuth=false";
-                    HttpUtil.doPost2(url, "userName=" + username + "&userPwd=" + Base64Utils.encode(password) + "%3D&userDynamicPwd=&userDynamicPwdd=&serviceType=&isSavePwd=on&userurl=&userip=&basip=&language=Chinese&usermac=null&wlannasid=&wlanssid=&entrance=null&loginVerifyCode=&userDynamicPwddd=&customPageId=100&pwdMode=0&portalProxyIP=172.17.18.3&portalProxyPort=50200&dcPwdNeedEncrypt=1&assignIpType=0&appRootUrl=http%3A%2F%2F172.17.18.3%3A8080%2Fportal%2F&manualUrl=&manualUrlEncryptKey=");
+                    url = "http://172.17.18.2:30004/byod/byodrs/login/defaultLogin";
+                    //TODO: 登录
                     setnewtext("发包认证完毕，20s后重新获取...\n");
                     relogin(notification);
                     return;
@@ -236,7 +236,7 @@ public class MyService extends Service {
                 }
             }
             setnewtext("获取基本信息成功" + client + "正在获取验证码..\n");
-            cookie = HttpUtil.getck();
+            cookie = MyHttpUtil.getck();
             //Log.d("MainActivity", "run: "+cookie);
             String verifycode = getVerifyCodeString();
             setnewtext("获取验证码为：" + verifycode + "，正在登录...\n");
@@ -295,7 +295,7 @@ public class MyService extends Service {
 
         //Log.d("MainActivity", jsonObject.toString());
         //Log.d("MainActivity", cookie);
-        String verifyCodeString = HttpUtil.doPost(url, jsonObject.toString(), cookie);
+        String verifyCodeString = MyHttpUtil.doPost(url, jsonObject.toString(), cookie);
 
         Log.d(TAG, "getVerifyCodeString: " + verifyCodeString);
         JSONObject json = new JSONObject(verifyCodeString);
@@ -318,7 +318,7 @@ public class MyService extends Service {
         jsonObject.put("timestamp", timestamp);
         jsonObject.put("authenticator", md5String);
 
-        String loginString = HttpUtil.doPost(url, jsonObject.toString(), cookie);
+        String loginString = MyHttpUtil.doPost(url, jsonObject.toString(), cookie);
 
         return loginString;
     }
@@ -336,7 +336,7 @@ public class MyService extends Service {
         jsonObject.put("timestamp", timestamp);
         jsonObject.put("authenticator", md5String);
 
-        String verifyCodeString = HttpUtil.doPost(url, jsonObject.toString(), cookie);
+        String verifyCodeString = MyHttpUtil.doPost(url, jsonObject.toString(), cookie);
         return verifyCodeString;
     }
 
@@ -347,7 +347,7 @@ public class MyService extends Service {
         String param = "username=" + username + "&clientip=" + client + "&nasip=" + nasip + "&mac=" + mac + "&timestamp=" + timestamp + "&authenticator="
                 + md5String;
         try {
-            String activeString = HttpUtil.doGet(url + "?" + param, "");
+            String activeString = MyHttpUtil.doGet(url + "?" + param, "");
             Log.d(TAG, "keepConnection: " + activeString);
             JSONObject json = new JSONObject(activeString);
             activeString = json.getString("resinfo");
