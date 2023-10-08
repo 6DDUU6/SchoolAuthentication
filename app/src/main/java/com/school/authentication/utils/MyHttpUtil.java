@@ -20,10 +20,8 @@ public class MyHttpUtil {
         connection.setConnectTimeout(3000);
         connection.setReadTimeout(3000);
         connection.setRequestProperty("Cookie", cookie);
-        // ????????????
-        connection.connect();
 
-        // ???? BufferedReader???????????URL?????
+        connection.connect();
         in = new BufferedReader(new InputStreamReader(
                 connection.getInputStream(), "utf-8"));
         String line;
@@ -36,14 +34,22 @@ public class MyHttpUtil {
         return result;
     }
 
-    public static String doGet2(String url) throws Exception {
+    public static String doPost(String url, String postData, String[] headers) throws Exception {
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.87 Safari/537.36");
-        conn.setRequestProperty("Accept", "application/signed-exchange");
-        conn.setRequestProperty("Accept-Language", "zh-cn");
         conn.setConnectTimeout(3000);
         conn.setReadTimeout(3000);
-        conn.connect();
+        conn.setRequestMethod("POST");
+        conn.setDoOutput(false);
+        conn.setDoInput(true);
+
+        for (int i = 0; i < headers.length / 2; i++) {
+            conn.setRequestProperty(headers[i * 2], headers[i * 2 + 1]);
+        }
+
+        PrintWriter out = new PrintWriter(conn.getOutputStream());
+
+        out.print(postData);
+        out.flush();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(
                 conn.getInputStream(), "utf-8"));
@@ -55,142 +61,30 @@ public class MyHttpUtil {
         }
 
         in.close();
+        out.close();
         return result;
     }
 
     public static String doPost(String url, String param, String cookie) throws Exception {
-        HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-        conn.setConnectTimeout(3000);
-        conn.setReadTimeout(3000);
-        conn.setRequestMethod("POST");
-        conn.setDoOutput(false);
-        conn.setDoInput(true);
-
-        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.87 Safari/537.36");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Accept", "*/*");
-        conn.setRequestProperty("Host", "enet.10000.gd.cn:10001");
-        conn.setRequestProperty("Cookie", cookie);
-
-        PrintWriter out = new PrintWriter(conn.getOutputStream());
-
-        out.print(param);
-        out.flush();
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(
-                conn.getInputStream(), "utf-8"));
-
-        String line = "", result = "";
-
-        while ((line = in.readLine()) != null) {
-            result += line;
-        }
-
-        in.close();
-        out.close();
-        return result;
+        String[] headers = new String[]{
+                "User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.87 Safari/537.36",
+                "Content-Type", "application/json",
+                "Accept", "*/*",
+                "Host", "enet.10000.gd.cn:10001",
+                "Cookie", cookie
+        };
+        return doPost(url, param, headers);
     }
 
-    public static void doPost2(String url, String param) throws Exception {
-        HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-        conn.setConnectTimeout(3000);
-        conn.setReadTimeout(3000);
-        conn.setRequestMethod("POST");
-        conn.setDoOutput(false);
-        conn.setDoInput(true);
-
-        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.87 Safari/537.36");
-        conn.setRequestProperty("Accept", "application/signed-exchange");
-        conn.setRequestProperty("Accept-Language", "zh-cn");
-        //conn.setRequestProperty("Cookie",cookie);
-
-        PrintWriter out = new PrintWriter(conn.getOutputStream());
-
-        out.print(param);
-        out.flush();
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(
-                conn.getInputStream(), "utf-8"));
-
-        String line = "", result = "";
-
-        while ((line = in.readLine()) != null) {
-            result += line;
-        }
-
-        in.close();
-        out.close();
-    }
-
-    public static String doPost3(String url, String param, String cookie) throws Exception {//http://172.17.18.2:8080/byod/认证网页
-        HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-        conn.setConnectTimeout(3000);
-        conn.setReadTimeout(3000);
-        conn.setRequestMethod("POST");
-        conn.setDoOutput(false);
-        conn.setDoInput(true);
-
-        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.87 Safari/537.36");
-        conn.setRequestProperty("Cookie", cookie);
-
-        PrintWriter out = new PrintWriter(conn.getOutputStream());
-
-        out.print(param);
-        out.flush();
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(
-                conn.getInputStream(), "utf-8"));
-
-        String line = "", result = "";
-
-        while ((line = in.readLine()) != null) {
-            result += line;
-        }
-
-        in.close();
-        out.close();
-        return result;
-    }
-
-    //💩都💩了，不如再💩一点
-    public static String doPost4(String url, String param) throws Exception {
-        HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-        conn.setConnectTimeout(3000);
-        conn.setReadTimeout(3000);
-        conn.setRequestMethod("POST");
-        conn.setDoOutput(false);
-        conn.setDoInput(true);
-
-        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.87 Safari/537.36");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Origin", "http://172.17.18.2:30004");
-        conn.setRequestProperty("Referer", "http://172.17.18.2:30004/byod/view/byod/template/templatePhone.html");
-        conn.setRequestProperty("Cookie", "testcookie=yes;");
-
-        PrintWriter out = new PrintWriter(conn.getOutputStream());
-
-        out.print(param);
-        out.flush();
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(
-                conn.getInputStream(), "utf-8"));
-
-        String line = "", result = "";
-
-        while ((line = in.readLine()) != null) {
-            result += line;
-        }
-
-        in.close();
-        out.close();
-        return result;
-    }
-
-    public static String getRedirectUrl(String urlString) throws Exception {
-        HttpURLConnection conn = (HttpURLConnection) new URL(urlString)
-                .openConnection();
-        conn.setInstanceFollowRedirects(false);
-        return conn.getHeaderField("Location");
+    public static String doPost2(String url, String param) throws Exception {
+        String[] headers = new String[]{
+                "User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.87 Safari/537.36",
+                "Content-Type", "application/json",
+                "Origin", "http://172.17.18.2:30004",
+                "Referer", "http://172.17.18.2:30004/byod/view/byod/template/templatePhone.html",
+                "Cookie", "testcookie=yes;"
+        };
+        return doPost(url, param, headers);
     }
 
     public static int getNetworkCode(String urlString) throws Exception {
@@ -206,36 +100,5 @@ public class MyHttpUtil {
         conn.setConnectTimeout(3000);
         conn.setReadTimeout(3000);
         return conn.getHeaderField("Set-Cookie");
-    }
-
-    public static String getck2() throws Exception {
-        HttpURLConnection conn = (HttpURLConnection) new URL("http://172.17.18.2:8080/byod/templatePage/20200318110733542/guestRegister.jsf")
-                .openConnection();
-        conn.setConnectTimeout(3000);
-        conn.setReadTimeout(3000);
-        return conn.getHeaderField("Set-Cookie");
-    }
-
-    public static String getRedirectUrl2(String url, String param, String cookie) throws Exception {//获取http://172.17.18.2:8080/byod/index.xhtml的重定向地址
-        HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-        conn.setInstanceFollowRedirects(false);
-        conn.setConnectTimeout(3000);
-        conn.setReadTimeout(3000);
-        conn.setRequestMethod("POST");
-        conn.setDoOutput(false);
-        conn.setDoInput(true);
-
-        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.87 Safari/537.36");
-        conn.setRequestProperty("Cookie", cookie);
-
-        PrintWriter out = new PrintWriter(conn.getOutputStream());
-
-        out.print(param);
-        out.flush();
-
-        String tmp = conn.getHeaderField("Location");
-
-        out.close();
-        return tmp;
     }
 }

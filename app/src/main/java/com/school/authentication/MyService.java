@@ -1,18 +1,12 @@
 package com.school.authentication;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -298,7 +292,7 @@ public class MyService extends Service {
             put("wlannasid", null);
         }};
         String data = JSON.toJSONString(map);
-        String ret = MyHttpUtil.doPost4(url, data);
+        String ret = MyHttpUtil.doPost2(url, data);
         com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(ret);
         String msg = (String) jsonObject.get("msg");
         setnewtext("登录返回信息：" + msg);

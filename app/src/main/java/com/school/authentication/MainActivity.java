@@ -252,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
             put("wlannasid", null);
         }};
         String data = JSON.toJSONString(map);
-        String ret = MyHttpUtil.doPost4(url, data);
+        String ret = MyHttpUtil.doPost2(url, data);
         com.alibaba.fastjson.JSONObject jsonObject = JSON.parseObject(ret);
         String msg = (String) jsonObject.get("msg");
         addlog("登录返回信息：" + msg + "\n");
