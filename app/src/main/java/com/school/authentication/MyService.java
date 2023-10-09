@@ -277,7 +277,14 @@ public class MyService extends Service {
     public void WebAuth() throws Exception {
         url = "http://172.17.18.2:30004/byod/byodrs/login/defaultLogin";
         HashMap<String, Object> map = new HashMap<String, Object>() {{
-            put("userName", username);
+            char c = username.charAt(username.length() - 1);
+            String u = "";
+            if (c <= 122 && c >= 97) { //判断是不是尊贵的高级用户，高级用户的账号没有字母
+                u = username.substring(0, username.length() - 1);
+            } else {
+                u = username;
+            }
+            put("userName", u);
             put("userPassword", Base64Utils.encode(password));
             put("serviceSuffixId", "-1");
             put("dynamicPwdAuth", false);

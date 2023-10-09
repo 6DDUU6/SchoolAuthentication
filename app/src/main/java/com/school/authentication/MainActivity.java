@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
                         //200不是畅通，是需要认证
                         addlog("当前为纯学校wifi，需要登录认证，正在自动认证中...\n");
                         WebAuth();
+                        addlog("若显示验证成功，请重新按登录按钮\n");
                         fg = 0;
                         return;
                     } else if (conn.getResponseCode() == 302) {
@@ -237,7 +238,15 @@ public class MainActivity extends AppCompatActivity {
     public void WebAuth() throws Exception {
         url = "http://172.17.18.2:30004/byod/byodrs/login/defaultLogin";
         HashMap<String, Object> map = new HashMap<String, Object>() {{
-            put("userName", username);
+            char c = username.charAt(username.length() - 1);
+            String u = "";
+            if (c <= 122 && c >= 97) { //判断是不是尊贵的高级用户，高级用户的账号没有字母
+                u = username.substring(0, username.length() - 1);
+            } else {
+                u = username;
+            }
+            addlog("正在进行web验证:" + u + "|" + password + "\n");
+            put("userName", u);
             put("userPassword", Base64Utils.encode(password));
             put("serviceSuffixId", "-1");
             put("dynamicPwdAuth", false);
