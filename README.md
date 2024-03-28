@@ -1,3 +1,8 @@
+# 本项目已停止维护
+由于旧版登录接口疑似失效
+请大家移步至另一位大佬写的新项目：https://github.com/Rsplwe/ESurfingDialer
+新项目使用了新的验证登录接口，支持路由器以及docker部署，还是挺不错的
+
 # SchoolAuthentication
 五邑大学电信校园认证
 Android端
